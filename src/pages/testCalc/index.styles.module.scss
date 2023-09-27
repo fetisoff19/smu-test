@@ -1,0 +1,114 @@
+@import "@styles";
+.page{
+  @include scrollBar;
+  display: flex;
+  flex-direction: column;
+  //column-count: 3;
+  gap: calc(10px);
+  //height: calc(100vh - $footerHeight - $headerHeight);
+  height: fit-content;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  margin: 10px 0 0 10px;
+
+  .table{
+    height: 100%;
+    button{
+      width: fit-content;
+      background-color: rgba(0, 0, 0, 0);
+      &:hover{
+        background-color: $grey;
+      }
+    }
+  }
+
+  h2, h3, h4{
+    padding: 0;
+    margin: 0;
+  };
+  hr{
+    width: 100%;
+    margin: 3px 0;
+  }
+
+  .blocks{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    .block{
+      //border: 1px solid grey;
+      //border-radius: 5px;
+      //background-color: whitesmoke;
+      background-color: $lightGrey;
+      border-radius: $appBorderRadius;
+
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
+
+      button{
+        @include button;
+        width: 100%;
+        //box-shadow: 0 2px 6px 2px $shadowColor;
+
+      }
+      input{
+        @include flexSB;
+        @include input;
+        width: 100px;
+      }
+      .delete{
+        color: darkred;
+        background-color: rgba(0, 0, 0, 0,);
+      }
+
+      .objects{
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        .object{
+          height: fit-content;
+          width: 130px;
+          background-color: $bgColor;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          //border: 1px solid grey;
+          border-radius: $appBorderRadius;
+          box-shadow: 0 2px 6px 2px $shadowColor;
+          gap: 5px;
+          //padding: 10px 0;
+
+          .name{
+            @include flexSB;
+
+            //width: 100%;
+            height: 20px;
+            button{
+              width: 30px;
+            };
+          }
+          .settings{
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.svgButton{
+  @include svgButton;
+}
+.isShowing{
+  @include svgButton;
+  background-color: $grey  !important;
+}
+.perform{
+  @include button;
+  width: 100%;
+}
+

@@ -1,0 +1,9 @@
+@import "vars";
+//экспорт переменных в js. Пример использования:
+//import styles from '@styles/_export.module.scss'
+//color={styles.appColor}
+
+:export {
+  appColor: $appColor;
+  ganttBarDefaultColor: $ganttBarDefaultColor
+}

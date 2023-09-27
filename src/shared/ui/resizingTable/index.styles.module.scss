@@ -1,0 +1,120 @@
+@import "@styles";
+
+.table{
+  font-size: $fontSizeHtml;
+  box-sizing: border-box;
+  border-spacing: 0;
+  width: 100%;
+  background-color: $bgColor;
+  //padding-bottom: 100px; // чтобы поместилось выпадающее меню
+  .header{
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 20px;
+    h3{
+      padding: 5px;
+      margin: 0;
+    }
+  }
+  .filter{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    padding: 10px;
+    label, input{
+      cursor: pointer;
+    }
+  }
+  table{
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid lightgray;
+    thead{
+      text-align: left;
+      user-select: none;
+    }
+    tr{
+      .sortColumn{
+        &:hover{
+          cursor: pointer;
+        }
+      }
+
+      &:hover{
+        .resizer {
+          position: absolute;
+          right: 0;
+          top: 0;
+          height: 100%;
+          width: 3px;
+          background: $grey;
+          cursor: col-resize;
+          user-select: none;
+          touch-action: none;
+        }
+
+        .isResizing {
+          background: #167a39;
+          //opacity: 1;
+        }
+      }
+    }
+
+
+    td, th {
+      position: relative;
+      text-overflow: ellipsis;
+      border: 1px solid $lightGrey;
+      padding: 0.3rem;
+      overflow-wrap: anywhere;
+      &:has(button, svg){
+        div{
+          height: 100%;
+          width: 100%;
+          @include flexCenter;
+          svg{
+            height: 14px;
+            width: 14px;
+        }
+        }
+        //border: none;
+      }
+    }
+    tr{
+      height: 2.5rem;
+      width: fit-content;
+      position: relative;
+      .checkBox{
+        text-align: center;
+      }
+
+      &:hover{
+        background-color: $greyHighlight;
+      }
+
+    }
+  }
+}
+
+
+.svgButton{
+  @include svgButton;
+  font-size: 1.2rem;
+}
+.isShowing{
+  @include svgButton;
+  background-color: $grey;
+}
+
+
+//@media (hover: hover) {
+//  .resizer {
+//    opacity: 0;
+//  }
+//
+//  *:hover > .resizer {
+//    opacity: 1;
+//  }
+//}

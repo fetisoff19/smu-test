@@ -1,0 +1,112 @@
+// глобальные переменные
+$appBorderRadius: 3px;
+$headerHeight: 1.6rem;
+$fontSizeHtml: 14px;
+$footerHeight: 1.6rem;
+$maxLineLength: 75ch;
+$scrollbarWidth: 0.6rem;
+$svgIconsSIze: 18px;
+
+$appColor: #005838;
+$bgColor: white;
+$fontColor: rgb(44, 44, 44);
+$lightFont: white;
+$warningRed: rgb(255, 0, 0);
+$warningBg: rgb(255 240 240);
+$lightGrey: rgb(240, 240, 240);
+$grey: rgb(213, 213, 213);
+$darkGrey: rgb(111, 110, 110);
+$greyHighlight: hsla(0, 0%, 85%, 0.3);
+$colorHighlight: aliceblue;
+$shadowColor: rgb(60 64 67 / 15%);
+$outlineColor: rgb(135, 135, 135);
+$ganttBarDefaultColor: rgb(75, 122, 167);
+$zIndexMax: 9999;
+//добавить миксины
+
+
+@mixin flexCenter(){
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flexSB(){
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin button(){
+  background-color:  $appColor;
+  border-radius: $appBorderRadius;
+  color: $lightFont;
+  font-size: $fontSizeHtml;
+  border: 0 solid;
+  padding: 0.4rem 0.6rem;
+  outline: none;
+
+  cursor: pointer;
+  user-select: none;
+
+  &:hover{
+    filter: brightness(93%);
+  }
+  &:active {
+    filter: brightness(97%);
+  }
+}
+
+@mixin input(){
+  padding: 0.3rem;
+  border: 1px solid $grey;
+  border-radius: $appBorderRadius;
+  //font-size: $fontSizeHtml;
+  //-webkit-appearance: none;
+  // простое решение по выравниванию высоты инпута и селекта. Нужно сложное с svg
+
+  //&:focus{
+  //  outline: $outlineColor solid 0.1rem;
+  //}
+}
+
+@mixin svgButton() {
+  background-color: inherit;
+  outline: none;
+  cursor: pointer;
+  min-width: 2rem;
+  min-height: 2rem;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  font-weight: bold;
+  color: $fontSizeHtml;
+  padding: 0.3rem;
+  user-select: none;
+  border: unset;
+
+  @include flexCenter;
+
+  &:hover{
+    background-color: $grey
+  }
+  &:active {
+    filter: brightness(97%);
+    svg{
+      fill: $appColor
+    }
+  }
+}
+
+@mixin scrollBar() {
+  &::-webkit-scrollbar {
+    width: $scrollbarWidth;
+    height: $scrollbarWidth;
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $grey;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: $darkGrey;
+  }
+}

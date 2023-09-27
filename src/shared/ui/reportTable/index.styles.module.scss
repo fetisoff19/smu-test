@@ -1,0 +1,95 @@
+@import "@styles";
+
+.wrapper{
+  @include scrollBar;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  position: sticky;
+  top: 5px;
+  height: $scrollbarWidth;
+  z-index: $zIndexMax;
+  .fakeTable{
+    height: $scrollbarWidth;
+  }
+}
+
+.table{
+  font-size: $fontSizeHtml;
+  box-sizing: border-box;
+  border-spacing: 0;
+  width: 100%;
+  background-color: $bgColor;
+
+  @include scrollBar;
+  overflow-x: auto;
+  //padding-bottom: 100px; // чтобы поместилось выпадающее меню
+  .header{
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 20px;
+    h3{
+      padding: 5px;
+      margin: 0;
+    }
+  }
+  .filter{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    padding: 10px;
+    label, input{
+      cursor: pointer;
+    }
+  }
+  table{
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid $grey;
+    thead{
+      text-align: left;
+      user-select: none;
+    }
+    tr{
+      .sortColumn{
+        &:hover{
+          cursor: pointer;
+        }
+      }
+      &:hover{
+        .resizer {
+          position: absolute;
+          right: 0;
+          top: 0;
+          height: 100%;
+          width: 3px;
+          background: $grey;
+          cursor: col-resize;
+          user-select: none;
+          touch-action: none;
+        }
+        .isResizing {
+          background: #167a39;
+          //opacity: 1;
+        }
+      }
+    }
+
+    td, th {
+      position: relative;
+      text-overflow: ellipsis;
+      border: 1px solid $grey;
+      padding: 0.2rem;
+      overflow-wrap: anywhere;
+    }
+    tr{
+      height: 2rem;
+      width: fit-content;
+      position: relative;
+      &:hover .td, .th{
+        background-color: $greyHighlight;
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+@use "vars";
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  height: 100%;
+  font-size: $fontSizeHtml;
+  overflow: hidden;
+}
+
+
+.main{
+  height: calc(100vh - $headerHeight - $footerHeight);
+  overflow-x: auto;
+  @include scrollBar;
+}
+
+.center{
+  @include flexCenter;
+  flex-direction: column;
+  height: calc(100vh - $headerHeight - $footerHeight);
+}
+
+.active{
+  background-color: $greyHighlight;
+  outline: none;
+}
+
+
+
+
+
