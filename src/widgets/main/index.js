@@ -4,7 +4,6 @@ import { Navbar, Footer } from '@widgets'
 import { AppPuffLoader } from '@shared/ui/index.js'
 
 export const Main = () => {
-
   return (
     <>
       <Navbar/>
