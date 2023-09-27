@@ -5,7 +5,7 @@
   overflow-x: scroll;
   overflow-y: hidden;
   position: sticky;
-  top: 5px;
+  top: 0.3rem;
   height: $scrollbarWidth;
   z-index: $zIndexMax;
   .fakeTable{
@@ -27,9 +27,9 @@
     display: flex;
     align-items: baseline;
     justify-content: flex-start;
-    gap: 20px;
+    gap: 1.2rem;
     h3{
-      padding: 5px;
+      padding: 0.3rem;
       margin: 0;
     }
   }
@@ -37,8 +37,8 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 20px;
-    padding: 10px;
+    gap: 1.2rem;
+    padding: 0.6rem;
     label, input{
       cursor: pointer;
     }
@@ -63,7 +63,7 @@
           right: 0;
           top: 0;
           height: 100%;
-          width: 3px;
+          width: 0.2rem;
           background: $grey;
           cursor: col-resize;
           user-select: none;

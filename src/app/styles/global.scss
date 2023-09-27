@@ -12,8 +12,21 @@ body,
 }
 
 
+@media (max-width: $m-display-width) {
+  *{
+    font-size: 12px;
+  }
+}
+
+@media (max-width: $s-display-width) {
+  *{
+    font-size: 10px;
+  }
+}
+
 .main{
   height: calc(100vh - $headerHeight - $footerHeight);
+  width: 100%;
   overflow-x: auto;
   @include scrollBar;
 }
