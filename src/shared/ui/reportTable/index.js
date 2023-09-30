@@ -32,9 +32,9 @@ export function ReportTable ({ defaultData, defaultColumns, configRowSpan, setSi
     columns,
     columnResizeMode,
     getCoreRowModel: getCoreRowModel(),
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true
+    // debugTable: true,
+    // debugHeaders: true,
+    // debugColumns: true
   })
 
   function handleColumnResize () {

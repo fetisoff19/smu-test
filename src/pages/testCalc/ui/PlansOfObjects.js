@@ -1,13 +1,13 @@
 import styles from '@pages/testCalc/index.styles.module.scss'
 import { Button, InputAndSelect } from '@shared/ui/index.js'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setCalcObjects } from '@pages/testCalc/model/testCalc.slice.js'
 
-const Plan = ({ name, setPlans, min, max, length, object }) => {
-  const [start, setStart] = useState('2023-09-01')
-  const [end, setEnd] = useState('2023-09-10')
-  const [value, setValue] = useState(100)
+const Plan = ({ name, setPlans, min, max, length, object, initStart, initEnd, initValue }) => {
+  const [start, setStart] = useState(initStart || '2023-09-01')
+  const [end, setEnd] = useState(initEnd || '2023-09-10')
+  const [value, setValue] = useState(initValue || 100)
 
   useEffect(() => {
     setPlans(prev => prev.map((_, index) => index + 1 === name ? { start, end, value, name, object } : _))
@@ -31,7 +31,9 @@ const Plan = ({ name, setPlans, min, max, length, object }) => {
 }
 
 const Object = ({ name, setObject, length }) => {
-  const [plans, setPlans] = useState([{}])
+  const initialPlans = useSelector(state => state.testCalc.objects)
+    ?.find(item => item.name === name)?.plans || [{}]
+  const [plans, setPlans] = useState(initialPlans)
   const [start, setStart] = useState('2023-09-01')
   const [end, setEnd] = useState('2023-09-10')
 
@@ -58,7 +60,7 @@ const Object = ({ name, setObject, length }) => {
       </div>
       <div className={styles.settings}>
         {plans.map((plan, index) =>
-          <Plan key={index} name={index + 1} object={name}
+          <Plan key={index} name={index + 1} object={name} initStart={plan?.start} initEnd={plan?.end} initValue={plan?.value}
                 setPlans={setPlans} length={plans?.length}/>)}
       </div>
       <Button text={'Добавить план'} onClick={() => setPlans(prev => [...prev, {}])}/>
@@ -67,7 +69,9 @@ const Object = ({ name, setObject, length }) => {
 }
 
 export const PlansOfObjects = () => {
-  const [objects, setObjects] = useState([{}])
+  const initialObjects = useSelector(state => state.testCalc.objects) || [{}]
+
+  const [objects, setObjects] = useState(initialObjects)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setCalcObjects([...objects]))

@@ -13,7 +13,7 @@ export const PerformCalc = () => {
   const storeObjects = useSelector(state => state.testCalc.objects)
   const storeActs = useSelector(state => state.testCalc.acts)
   const storeSettings = useSelector(state => state.testCalc.settings)
-  const salaryConfig = useSelector(state => state.testCalc.subject).salaryConfig
+  const salaryConfig = useSelector(state => state.testCalc.subject)?.salaryConfig
   const start = useSelector(state => state.testCalc.start)
   const end = useSelector(state => state.testCalc.end)
 
@@ -55,6 +55,8 @@ export const PerformCalc = () => {
     // здесь и далее мутации daysArr и futureDays
     SalaryCalcValues.futureDaysWithWorkloadCoef(futureDays, salaryConfig?.areaHeadModelConfig, [])
     SalaryCalcMainService.calculationPlans(futureDays, thriftBox, false, salaryConfig?.areaHeadModelConfig)
+    SalaryCalcMainService.calculationWeightInDays(futureDays, thriftBox)
+    SalaryCalcMainService.calculationDeductionAndPremium(futureDays, thriftBox, false, salaryConfig?.areaHeadModelConfig)
     SalaryCalcMainService.calculationDays(futureDays, thriftBox)
     ThriftBoxService.getOutgoingData(thriftBox)
     dispatch(addTestCalculation({ created: new Date().toLocaleString(), start, end, thriftBox, futureDays }))

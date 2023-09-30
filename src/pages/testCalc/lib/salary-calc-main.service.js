@@ -39,40 +39,140 @@ export class SalaryCalcMainService {
     for (const plansKey in plans) {
       const objectPlans = plans[plansKey]
       objectPlans?.forEach(plan => {
+        const planStart = new Date(plan.start)
+        const planEnd = new Date(plan.end)
+        const objectPlansEnd = new Date(thriftBox.endDay[plansKey])
         const fiveHoursInMs = 18000000 // величину можно скорректировать или вынести проверку в отдельную функцию
-        const diffDaysStartEndObject = (DateService.getDiffDays(plan.start, thriftBox.endDay[plansKey]) + 1)
+        const diffDaysStartEndObject = DateService.getDiffDays(planStart, objectPlansEnd) + 1
         const balancePerDay = (thriftBox.balance[plansKey] / diffDaysStartEndObject)
-        const deductionPerDay = thriftBox.deduction[plansKey] / diffDaysStartEndObject
-        // console.log(deductionPerDay, thriftBox.deduction[plansKey], diffDaysStartEndObject, plan.start, thriftBox.endDay[plansKey])
+        // const deductionPerDay = thriftBox.deduction[plansKey] / diffDaysStartEndObject
         for (const day of futureDays) {
-          if (day.date >= plan.start && day.date <= plan.end) {
+          const dayDate = day.date
+          if (dayDate >= planStart && dayDate <= planEnd) {
             for (const object of day.objects) {
               if (plansKey === object.name && object.plan > 0) {
                 if (isModelling) {
                   object.revisedPlan = object.fact
                 } else object.revisedPlan = (object.plan + balancePerDay)
-                const isPremium = object.fact && object.plan && (object.fact - object.revisedPlan > 0)
-                const isDeduction = object.plan && (object.plan - object.fact > 0)
-                const isSalaryFromDeduction =
-                  (((object.fact - object.plan) >= 0) || (object.fact - object.revisedPlan) >= 0) &&
-                  (thriftBox.deduction[plansKey] > 0)
-                object.salaryTarget = day.salaryTarget + object.salaryFromDeduction
+                // const isPremium = object.fact && object.plan && (object.fact - object.revisedPlan > 0)
+                // const isDeduction = object.plan && (object.plan - object.fact > 0 && object.revisedPlan > 0)
+                // const isSalaryFromDeduction =
+                //   (((object.fact - object.plan) >= 0) || (object.fact - object.revisedPlan) >= 0) &&
+                //   (thriftBox.deduction[plansKey] > 0)
+                // object.salaryTarget = day.salaryTarget + object.salaryFromDeduction
                 object.balance = object.revisedPlan - object.fact
                 plan.balance += (object.balance - balancePerDay)
+                // if (isPremium) {
+                //   object.premium = Math.min(
+                //     ((object.fact - object.revisedPlan) * object.salaryTarget / object.revisedPlan) *
+                //     (salaryConfig?.premiumCoef || 1),
+                //     object.salaryTarget
+                //   ) * (salaryConfig?.salaryPremiumPercent || 100) / 100
+                // }
+                //
+                // if (isDeduction) {
+                //   const deduction = Math.min(
+                //     (object.balance * object.salaryTarget / object.revisedPlan),
+                //     object.salaryTarget
+                //   ) * (salaryConfig?.deductionCoef || 1)
+                //   object.deduction += deduction
+                //   plan.deduction += deduction
+                // }
+                //
+                // if (isSalaryFromDeduction) {
+                //   object.salaryFromDeduction += deductionPerDay
+                //   plan.salaryFromDeduction += deductionPerDay
+                // }
+                day.revisedPlan += object.revisedPlan
+              }
+            }
+            // крайний день плана, корректируем кубышку
+            if ((Math.abs(planEnd.getTime() - dayDate.getTime()) < fiveHoursInMs) || new Date(futureDays.at(-1).date) === dayDate) {
+              thriftBox.balance[plansKey] += plan.balance
+              // thriftBox.deduction[plansKey] += (plan.deduction - plan.salaryFromDeduction)
+            }
+          }
+        }
+      })
+    }
+    return [futureDays, thriftBox]
+  }
 
+  static calculationWeightInDays (futureDays, thriftBox) {
+    for (const day of futureDays) {
+      for (const object of day.objects) {
+        object.weight = object.revisedPlan / day.revisedPlan
+        // object.premium = roundTo2(object.weight * object.premium)
+        // object.deduction = roundTo2(object.weight * object.deduction)
+        // object.salaryFromDeduction = roundTo2(object.weight * object.salaryFromDeduction)
+        // object.salaryTarget = roundTo2(object.weight * day.salaryTarget)
+        // object.salaryTotalCalc = roundTo2(
+        //   (object.salaryTarget + object.salaryFromDeduction + object.premium - object.deduction)
+        // )
+        // day.premium += object.premium
+        // day.deduction += object.deduction
+        // day.salaryFromDeduction += object.salaryFromDeduction
+        // day.salaryTotalCalc += object.salaryTotalCalc
+        object.plan = roundTo2(object.plan)
+        object.revisedPlan = roundTo2(object.revisedPlan)
+        object.fact = roundTo2(object.fact)
+        object.date = DateServiceUtils.getDateForInputDate(object.date)
+
+        // thriftBox.total[object.name].premium += object.premium
+        // thriftBox.total[object.name].deduction += object.deduction
+        // thriftBox.total[object.name].salaryFromDeduction += object.salaryFromDeduction
+        // thriftBox.total[object.name].salaryTotalCalc += object.salaryTotalCalc
+        // thriftBox.total[object.name].salaryTarget += object.salaryTarget
+      }
+      day.revisedPlan = roundTo2(day.revisedPlan)
+      // day.date = DateServiceUtils.getDateForInputDate(day.date)
+    }
+    return [futureDays, thriftBox]
+  }
+
+  static calculationDeductionAndPremium (futureDays, thriftBox, isModelling, salaryConfig) {
+    const { plans } = thriftBox
+
+    for (const plansKey in plans) {
+      const objectPlans = plans[plansKey]
+      objectPlans?.forEach(plan => {
+        const planStart = new Date(plan.start)
+        const planEnd = new Date(plan.end)
+        const objectPlansEnd = new Date(thriftBox.endDay[plansKey])
+        const fiveHoursInMs = 18000000 // величину можно скорректировать или вынести проверку в отдельную функцию
+        const diffDaysStartEndObject = DateService.getDiffDays(planStart, objectPlansEnd) + 1
+        // const balancePerDay = (thriftBox.balance[plansKey] / diffDaysStartEndObject)
+        const deductionPerDay = thriftBox.deduction[plansKey] / diffDaysStartEndObject
+        for (const day of futureDays) {
+          const dayDate = day.date
+          if (dayDate >= planStart && dayDate <= planEnd) {
+            for (const object of day.objects) {
+              if (plansKey === object.name && object.plan > 0) {
+                //   if (isModelling) {
+                //     object.revisedPlan = object.fact
+                //   } else object.revisedPlan = (object.plan + balancePerDay)
+                const isPremium = object.fact && object.plan && (object.fact - object.revisedPlan > 0)
+                const isDeduction = object.plan && (object.plan - object.fact > 0 && object.revisedPlan > 0)
+                const isSalaryFromDeduction =
+                  (object.fact - object.revisedPlan >= 0) &&
+                  (thriftBox.deduction[plansKey] > 0)
+                object.salaryTarget = day.salaryTarget
+                // object.balance = object.revisedPlan - object.fact
+                // plan.balance += (object.balance - balancePerDay)
+             
                 if (isPremium) {
                   object.premium = Math.min(
                     ((object.fact - object.revisedPlan) * object.salaryTarget / object.revisedPlan) *
                     (salaryConfig?.premiumCoef || 1),
                     object.salaryTarget
-                  ) * (salaryConfig?.salaryPremiumPercent || 100) / 100
+                  ) * ((salaryConfig?.salaryPremiumPercent || 100) / 100) * object.weight
                 }
 
                 if (isDeduction) {
                   const deduction = Math.min(
                     (object.balance * object.salaryTarget / object.revisedPlan),
                     object.salaryTarget
-                  ) * (salaryConfig?.deductionCoef || 1)
+                  ) * (salaryConfig?.deductionCoef || 1) * object.weight
                   object.deduction += deduction
                   plan.deduction += deduction
                 }
@@ -81,12 +181,13 @@ export class SalaryCalcMainService {
                   object.salaryFromDeduction += deductionPerDay
                   plan.salaryFromDeduction += deductionPerDay
                 }
-                day.revisedPlan += object.revisedPlan
+                // console.log(isDeduction, isPremium, isSalaryFromDeduction, dayDate, planEnd, planStart)
+                // day.revisedPlan += object.revisedPlan
               }
             }
             // крайний день плана, корректируем кубышку
-            if ((Math.abs(plan.end.getTime() - day.date.getTime()) < fiveHoursInMs) || futureDays.at(-1).date === day.date) {
-              thriftBox.balance[plansKey] += plan.balance
+            if ((Math.abs(planEnd.getTime() - dayDate.getTime()) < fiveHoursInMs) || new Date(futureDays.at(-1).date) === dayDate) {
+              // thriftBox.balance[plansKey] += plan.balance
               thriftBox.deduction[plansKey] += (plan.deduction - plan.salaryFromDeduction)
             }
           }
@@ -99,10 +200,10 @@ export class SalaryCalcMainService {
   static calculationDays (futureDays, thriftBox) {
     for (const day of futureDays) {
       for (const object of day.objects) {
-        object.weight = object.revisedPlan / day.revisedPlan
-        object.premium = roundTo2(object.weight * object.premium)
-        object.deduction = roundTo2(object.weight * object.deduction)
-        object.salaryFromDeduction = roundTo2(object.weight * object.salaryFromDeduction)
+        // object.weight = object.revisedPlan / day.revisedPlan
+        object.premium = roundTo2(object.premium)
+        object.deduction = roundTo2(object.deduction)
+        object.salaryFromDeduction = roundTo2(object.salaryFromDeduction)
         object.salaryTarget = roundTo2(object.weight * day.salaryTarget)
         object.salaryTotalCalc = roundTo2(
           (object.salaryTarget + object.salaryFromDeduction + object.premium - object.deduction)
@@ -111,11 +212,12 @@ export class SalaryCalcMainService {
         day.deduction += object.deduction
         day.salaryFromDeduction += object.salaryFromDeduction
         day.salaryTotalCalc += object.salaryTotalCalc
+
         object.weight = roundTo2(object.weight)
-        object.plan = roundTo2(object.plan)
-        object.revisedPlan = roundTo2(object.revisedPlan)
-        object.fact = roundTo2(object.fact)
-        object.date = DateServiceUtils.getDateForInputDate(object.date)
+        // object.plan = roundTo2(object.plan)
+        // object.revisedPlan = roundTo2(object.revisedPlan)
+        // object.fact = roundTo2(object.fact)
+        // object.date = DateServiceUtils.getDateForInputDate(object.date)
 
         thriftBox.total[object.name].premium += object.premium
         thriftBox.total[object.name].deduction += object.deduction
@@ -123,7 +225,7 @@ export class SalaryCalcMainService {
         thriftBox.total[object.name].salaryTotalCalc += object.salaryTotalCalc
         thriftBox.total[object.name].salaryTarget += object.salaryTarget
       }
-      day.revisedPlan = roundTo2(day.revisedPlan)
+      // day.revisedPlan = roundTo2(day.revisedPlan)
       day.date = DateServiceUtils.getDateForInputDate(day.date)
     }
     return [futureDays, thriftBox]

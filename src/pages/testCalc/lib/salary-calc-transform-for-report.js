@@ -36,9 +36,6 @@ export class SalaryCalcTransformForReport {
 
     const { incoming, outgoing, total, totalByPeriod } =
       this.getDataByPeriod(days, viewStart, viewEnd, objectNames)
-    console.log(
-      incoming, outgoing, total, totalByPeriod
-    )
 
     objectNames.forEach(item => {
       objects[item] = []
@@ -92,11 +89,13 @@ export class SalaryCalcTransformForReport {
         if (incoming[item.name]?.hasOwnProperty(item.parameters)) {
           item.incoming += Math.round(incoming[item.name][item.parameters])
         }
+        // if (thriftBox.outgoing[item.name]?.hasOwnProperty(item.parameters)) {
+        //   item.outgoing += Math.round(thriftBox.outgoing[item.name][item.parameters])
+        // }
 
         if (outgoing[item.name]?.hasOwnProperty(item.parameters)) {
           item.outgoing += Math.round(outgoing[item.name][item.parameters])
         }
-
         if (totalByPeriod[item.name]?.hasOwnProperty(item.parameters)) {
           item.totalByPeriod += Math.round(totalByPeriod[item.name][item.parameters])
         }
@@ -109,13 +108,9 @@ export class SalaryCalcTransformForReport {
         if (thriftBox.incoming[item.name]?.hasOwnProperty(item.parameters)) {
           item.incoming += Math.round(thriftBox.incoming[item.name][item.parameters])
         }
-        if (thriftBox.outgoing[item.name]?.hasOwnProperty(item.parameters)) {
-          item.outgoing += Math.round(thriftBox.outgoing[item.name][item.parameters])
-        }
       })
       result.push(...objects[key])
     }
-    console.log(total, thriftBox.total)
     return result
   }
 

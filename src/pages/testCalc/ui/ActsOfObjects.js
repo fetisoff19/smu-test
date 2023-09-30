@@ -1,13 +1,13 @@
 import styles from '@pages/testCalc/index.styles.module.scss'
 import { Button, InputAndSelect } from '@shared/ui/index.js'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setCalcActs } from '@pages/testCalc/model/testCalc.slice.js'
 
-const Acts = ({ name, object, setActs, length }) => {
-  const [start, setStart] = useState('2023-09-01')
-  const [end, setEnd] = useState('2023-09-10')
-  const [value, setValue] = useState(100)
+const Acts = ({ name, object, setActs, length, initStart, initEnd, initValue }) => {
+  const [start, setStart] = useState(initStart || '2023-09-01')
+  const [end, setEnd] = useState(initEnd || '2023-09-10')
+  const [value, setValue] = useState(initValue || 100)
 
   useEffect(() => {
     setActs(prev => prev.map((_, index) => index + 1 === name ? { start, end, value, name, object } : _))
@@ -31,7 +31,9 @@ const Acts = ({ name, object, setActs, length }) => {
 }
 
 const Object = ({ name, setObject, length }) => {
-  const [acts, setActs] = useState([{}])
+  const initialObject = useSelector(state => state.testCalc.acts)
+    ?.find(item => item.name === name)?.acts || [{}]
+  const [acts, setActs] = useState(initialObject)
 
   useEffect(() => {
     setObject(prev => prev.map((_, index) => index + 1 === name ? { acts, name } : _))
@@ -52,8 +54,8 @@ const Object = ({ name, setObject, length }) => {
         </div>
         <hr/>
         <div className={styles.settings}>
-          {acts.map((plan, index) =>
-            <Acts key={index} name={index + 1} object={name} setActs={setActs} length={acts?.length}/>)}
+          {acts.map((act, index) =>
+            <Acts key={index} name={index + 1} object={name} setActs={setActs} initStart={act?.start} initEnd={act?.end} initValue={act?.value} length={acts?.length}/>)}
         </div>
       </div>
       <Button text={'Добавить акт'} onClick={() => setActs(prev => [...prev, {}])}/>
@@ -62,7 +64,8 @@ const Object = ({ name, setObject, length }) => {
 }
 
 export const ActsOfObjects = () => {
-  const [objects, setObjects] = useState([{}])
+  const initialActs = useSelector(state => state.testCalc.acts) || [{}]
+  const [objects, setObjects] = useState(initialActs)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setCalcActs([...objects]))

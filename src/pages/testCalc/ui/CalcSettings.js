@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   setCalcEnd,
   setCalcSettings,
@@ -10,8 +10,8 @@ import {
 import styles from '@pages/testCalc/index.styles.module.scss'
 import { Button, InputAndSelect } from '@shared/ui/index.js'
 
-const Object = ({ name, setObjects, length }) => {
-  const [deduction, setDeduction] = useState(0)
+const Object = ({ name, setObjects, length, initDeduction }) => {
+  const [deduction, setDeduction] = useState(initDeduction || 0)
   // const [balance, setBalance] = useState(0)
   useEffect(() => {
     setObjects(prev => prev.map((_, index) => index + 1 === name ? { deduction, name } : _))
@@ -34,11 +34,16 @@ const Object = ({ name, setObjects, length }) => {
 }
 
 export const CalcSettings = () => {
-  const [start, setStart] = useState('2023-09-01')
-  const [end, setEnd] = useState('2023-09-10')
-  const [viewStart, setViewStart] = useState('2023-09-01')
-  const [viewEnd, setViewEnd] = useState('2023-09-10')
-  const [objects, setObjects] = useState([{}])
+  const initStart = useSelector(state => state.testCalc.start)
+  const initEnd = useSelector(state => state.testCalc.end)
+  const initViewStart = useSelector(state => state.testCalc.viewStart)
+  const initViewEnd = useSelector(state => state.testCalc.viewEnd)
+  const initSettings = useSelector(state => state.testCalc.settings) || [{}]
+  const [start, setStart] = useState(initStart || '2023-09-01')
+  const [end, setEnd] = useState(initEnd || '2023-09-10')
+  const [viewStart, setViewStart] = useState(initViewStart || '2023-09-01')
+  const [viewEnd, setViewEnd] = useState(initViewEnd || '2023-09-10')
+  const [objects, setObjects] = useState(initSettings)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setCalcSettings(objects))
@@ -70,8 +75,8 @@ export const CalcSettings = () => {
       <div className={styles.block}>
         <h3>Входящие данные</h3>
         <div className={styles.objects}>
-          {objects?.map((plan, index) =>
-            <Object key={index} name={index + 1} setObjects={setObjects} length={objects?.length}/>)}
+          {objects?.map((obj, index) =>
+            <Object key={index} name={index + 1} setObjects={setObjects} initDeduction={obj?.deduction} length={objects?.length}/>)}
         </div>
         <Button text={'Добавить объект'} onClick={() => setObjects(prev => [...prev, {}])}/>
       </div>

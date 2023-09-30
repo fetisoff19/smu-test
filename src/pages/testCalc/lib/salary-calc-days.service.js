@@ -51,7 +51,7 @@ export class SalaryCalcDaysService {
   }
 
   static isDayInObj (date, obj) {
-    return obj.start <= date && obj.end >= date
+    return new Date(obj.start) <= date && new Date(obj.end) >= date
   }
 
   static incrementDatePeriod (date, per) {

@@ -60,7 +60,7 @@ export class ThriftBoxService {
       }
       thriftBox.endDay = {
         ...thriftBox.endDay,
-        [obj.name]: new Date(obj.plans.at(-1).end)
+        [obj.name]: obj.plans.at(-1).end
       }
       thriftBox.plans = {
         ...thriftBox.plans,
@@ -72,8 +72,8 @@ export class ThriftBoxService {
         const end = new Date(item.end)
         thriftBox.plans[obj.name].push({
           value: +item.value,
-          start,
-          end,
+          start: item.start,
+          end: item.end,
           balance: 0,
           deduction: 0,
           salaryFromDeduction: 0,
@@ -93,8 +93,8 @@ export class ThriftBoxService {
           const end = new Date(item.end)
           thriftBox.acts[act.name].push({
             value: +item.value,
-            start,
-            end,
+            start: item.start,
+            end: item.end,
             // balance: 0,
             // deduction: 0,
             diffDays: DateService.getDiffDays(start, end) + 1
@@ -118,7 +118,7 @@ export class ThriftBoxService {
     for (const obj in thriftBox.plans) {
       thriftBox.balance[obj] = thriftBox.balance[obj] || 0
       thriftBox.deduction[obj] = thriftBox.deduction[obj] || 0
-      thriftBox.plans[obj] = thriftBox.plans[obj].sort((a, b) => a.start - b.start)
+      thriftBox.plans[obj] = thriftBox.plans[obj].sort((a, b) => new Date(a.start) - new Date(b.start))
     }
     return thriftBox
   }

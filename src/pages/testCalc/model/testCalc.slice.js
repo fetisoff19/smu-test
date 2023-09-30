@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { getStorageValue, setStorageValue } from '@shared/lib/utils/index.js'
 
 const testCalc = createSlice({
   name: 'testCalc',
@@ -7,12 +6,12 @@ const testCalc = createSlice({
     objects: null,
     acts: null,
     settings: null,
-    calculations: getStorageValue('testCalculations', []),
+    calculations: [],
     showCalc: null,
-    start: '',
-    end: '',
-    viewStart: '',
-    viewEnd: '',
+    start: null,
+    end: null,
+    viewStart: null,
+    viewEnd: null,
     subject: {
       _id: '6492e9871e0d2d9f34746e62',
       set2bId: '1602',
@@ -74,12 +73,12 @@ const testCalc = createSlice({
     },
     addTestCalculation (state, action) {
       const res = [...state.calculations, action.payload]
-      setStorageValue('testCalculations', res)
+      // setStorageValue('testCalculations', res)
       state.calculations = res
     },
     deleteTestCalculation (state, action) {
       const res = state.calculations.filter(item => item.created !== action.payload)
-      setStorageValue('testCalculations', res)
+      // setStorageValue('testCalculations', res)
       state.calculations = res
       if (state.showCalc === action.payload) { state.showCalc = null }
     },
